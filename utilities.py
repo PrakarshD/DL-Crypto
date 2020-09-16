@@ -38,6 +38,12 @@ chk_location = '../Final_model/weights.base.hdf5'
 coin = 'BTC'
 
 def data_retriever(coin):
+    """
+    Depending on the coin type, reads the data from csv; splits them into train, 
+    cross validation and test sets. Since we past 'horizon' timesteps of data, 
+    some data massaging is taken care of at the split of Train - CV sets and CV - Test sets.
+    Returns the processed data
+    """
     
     #Reading the data from the file
     coin_data_1h_raw = pd.read_csv(r'../data_binance/{}_USD_1h.csv'.format(coin))
@@ -66,6 +72,11 @@ def data_retriever(coin):
     return (TrainingData, ValidationData, TestingData, dates)
 
 def Train_Valid_Test_split(coin):
+    """
+    Depending on coin type, it first gets the data and its first differences.
+    Replaces the zeros with the sign of the mean value of price difference.
+    Returns the processed data.
+    """
     
     # Receiving the processed data from the data_retriever function
     TrainingData, ValidationData, TestingData, dates = data_retriever(coin)
@@ -105,6 +116,9 @@ def Train_Valid_Test_split(coin):
 
 
 def model_CNN_LSTM():
+    """
+    Constructs CNN LSTM model with author specified architecture
+    """
     model = Sequential()
     
     model.add(TimeDistributed(Conv1D(filters=32, kernel_size=2, padding='valid', activation='relu'), 
@@ -128,6 +142,9 @@ def model_CNN_LSTM():
     return model
 
 def model_CNN():
+    """
+    Constructs CNN model with hyperparameters same as that of CNN part of the author specified architecture
+    """
     model2 = Sequential()
     
     model2.add(Conv1D(filters=32, kernel_size=2, padding='valid', activation='relu',input_shape=(nTimeSteps, nFeatures)))
@@ -148,6 +165,9 @@ def model_CNN():
     return model2
 
 def model_LSTM():
+    """
+    Constructs LSTM model with hyperparameters same as that of LSTM part of the author specified architecture
+    """
     model3 = Sequential()
   
     model3.add(LSTM(50, activation='relu', dropout = 0.2, kernel_regularizer = L1L2(l1=0.01, l2=0.01)))
@@ -159,6 +179,11 @@ def model_LSTM():
     return model3
 
 def model_constructor(coin, model_type = None, split = 0.7):
+    """
+    Receives the processed data with passed split argument from Train_Valid_Test_split for a given coin.
+    Depending on the model type, it receives the compiled model from model_CNN or model_LSTM or model_CNN_LSTM()
+    It returns the model and processed data.
+    """
     
     trainX,trainY,validX,validY,testX,testY, trainY_raw, validY_raw, testY_raw = Train_Valid_Test_split(coin, split)
    
@@ -182,6 +207,11 @@ def model_constructor(coin, model_type = None, split = 0.7):
     return model,trainX,trainY,validX,validY,testX,testY
 
 def model_trainer(coin, model_type):
+    """
+    For a given coin, it receives the processed data and compiled model from model_constructor function.
+    Then it fits while using cross-validation set evaluation and callbacks to save the best model. 
+    It returns the raw predictions and prediction after applying sign function.
+    """
 
     #Getting the model and processed data
     model, trainX, trainY, validX, validY, testX, testY, dates, trainY_raw,\
@@ -223,6 +253,14 @@ def model_trainer(coin, model_type):
            validY, testY, dates, trainY_raw, validY_raw, testY_raw)
 
 def model_trainer_threshold(coin, model_type, threshold):
+    """
+    For a given coin, it receives the processed data and compiled model from model_constructor.
+    Then it fits while using cross-validation set evaluation and callbacks to save the best model
+    Given we use threshold, after the predictions are computed, threshold is applied and only 
+    confident predictions are used. Finally, it returns the raw predictions and prediction after 
+    applying sign function.
+    """
+    
     # Getting the model and processed data
     model, trainX, trainY, validX, validY, testX, testY, dates, \
     trainY_raw, validY_raw, testY_raw = model_constructor(coin, model_type)
@@ -316,6 +354,10 @@ def model_trainer_threshold(coin, model_type, threshold):
            validY_clean, testY_clean, dates, trainY_raw_clean, validY_raw_clean, testY_raw_clean)
 
 def ClassificationEvaluation(testY, Pred, plots = False):
+    """
+    Computes the evaluation metrics like Confusion matrix,
+    Accuracy, F1 & ROC curve elements. Returns these metrics.
+    """
     
     N        = testY.shape[0]
    
@@ -340,6 +382,11 @@ def ClassificationEvaluation(testY, Pred, plots = False):
     return (CM, Accuracy, F1, AUC, tpr, fpr)
 
 def results_plotter(coin, model_type, threshold_switch=False, threshold=0.667):
+    """
+    Gets the predictions from the model_trainer/ model_trainer_threshold functions, 
+    plots the predictions distribution, computes
+    the evaluation metrics (Accuracy, F1 score and confusion matrix) and prints them 
+    """
     
    #If threshold switch False, resort to default model; else you one with threshold for predictions 
     if threshold_switch:
@@ -680,6 +727,12 @@ def model_trainer_multi(coin, model_type):
     return trainPredict,valid_predict, testPredict, model, trainY, validY, testY, dates,trainY_raw, validY_raw, testY_raw
 
 def model_trainer_threshold_multi(coin, model_type, threshold):
+    """
+    For a given coin, it receives the processed data and compiled model from model_constructor_multi.
+    Then it fits while using cross-validation set evaluation and callbacks to save the best model
+    Given we use threshold, after the predictions are computed, threshold is applied and only 
+    confident predictions are used.
+    """
     model,trainX,trainY,validX,validY,testX,testY, dates,trainY_raw, validY_raw, testY_raw= model_constructor_multi(coin, model_type)
     
     checkpointer = ModelCheckpoint(filepath         = '../Final_model/weights.best.from_scratch5.hdf5', 
@@ -774,6 +827,11 @@ def model_trainer_threshold_multi(coin, model_type, threshold):
 
 
 def results_plotter_multi(coin, model_type, threshold_switch = False, threshold = 0.667):
+    """
+    Gets the predictions from the model_trainer/ model_trainer_threshold_multi functions, 
+    plots the predictions distribution, computes
+    the evaluation metrics (Accuracy, F1 score and confusion matrix) and prints them 
+    """
     
     if threshold_switch:
         trainPredict,valid_predict, testPredict, model, trainY, validY, testY, dates,trainY_raw, validY_raw, testY_raw = model_trainer_threshold_multi(coin, model_type, threshold)
