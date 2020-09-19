@@ -429,6 +429,17 @@ def results_plotter(coin, model_type, threshold_switch=False, threshold=0.667):
 ################################################################
 
 def model_CNN_LSTM_layers():
+    '''
+    returns a CNN+LSTM model with 2 conv and 3 lstm layers. 
+    
+    Parameters
+    ----------
+    None
+    
+    Returns
+    -------
+    model: keras model with the architecture described
+    '''
     model = Sequential()
     
     model.add(TimeDistributed(Conv1D(filters=32, kernel_size=2, padding='valid', activation='relu'), 
@@ -450,14 +461,31 @@ def model_CNN_LSTM_layers():
     
     print("\nModel Architecture \n")
     model.summary()
-    plot_model(model,show_shapes=True,to_file='Model_LSTM3.png')
     model.compile(loss='mean_absolute_error', 
                   optimizer=keras.optimizers.Adam(learning_rate=0.001), 
                   metrics = ['accuracy']) 
     return model
 
 def model_constructor_layers(coin, split = 0.7):
+    '''
+    Constructs the training process by obtaining and performing train/test split on the given coin data
+    Then calls for the keras model
     
+    Parameters
+    ----------
+    coin: name of the cryptocurrency
+    split: optional; this is used for rolling horizon tests
+    
+    Returns
+    -------
+    model: keras model with the architecture described
+    trainX: training data features
+    trainY: training data target
+    validX: validation data features
+    validY: validation data target
+    testX: test data features
+    testY: test data target
+    '''
     trainX,trainY,validX,validY,testX,testY, trainY_raw, validY_raw, testY_raw = Train_Valid_Test_split(coin, split)
    
     model = model_CNN_LSTM_layers()
@@ -466,7 +494,11 @@ def model_constructor_layers(coin, split = 0.7):
     return model,trainX,trainY,validX,validY,testX,testY
 
 def model_trainer_layers(coin):
-
+    """
+    For a given coin, it receives the processed data and compiled model from model_constructor function.
+    Then it fits while using cross-validation set evaluation and callbacks to save the best model. 
+    It returns the raw predictions and prediction after applying sign function.
+    """
     model, trainX, trainY, validX, validY, testX, testY, dates, trainY_raw,\
     validY_raw, testY_raw = model_constructor_layers(coin)
 
@@ -510,6 +542,17 @@ def model_trainer_layers(coin):
 ################################################################
 
 def model_CNN_LSTM_bayes(hp):
+    '''
+    returns a cnn+lstm model with best set of hyperparameters. 
+    
+    Parameters
+    ----------
+    hp: Keras hyperparameter tuner
+    
+    Returns
+    -------
+    model: tuned keras model with the architecture described
+    '''
     model = Sequential()
     
     model.add(TimeDistributed(Conv1D(filters=hp.Choice('num_filters',
@@ -540,6 +583,18 @@ def model_CNN_LSTM_bayes(hp):
                   metrics = ['accuracy'])
     return model
 def results_plotter_bayes(model):
+    '''
+    Display the weights of predicted target and confusion matrix after bayesian  
+    optimization tuning
+    
+    Parameters
+    ----------
+    model
+    
+    Returns
+    -------
+    None
+    '''
     fig, axs = plt.subplots(1)
     fig.suptitle('\nWeights Distribution for {} Price movement Prediction'.format(coin))
     n, bins, patches = axs.hist(testPredict, 10, density=True, facecolor='b', alpha=0.5)
