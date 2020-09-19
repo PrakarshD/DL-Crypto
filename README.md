@@ -1,5 +1,5 @@
 # Bitcoin price prediction with Deep Learning 
-#### Full report can be found [here](../Final_Report.pdf)
+#### Full report can be found [here](https://github.com/wingwingz/DL-Crypto/blob/master/Final_Report.pdf)
 #### For best view and the ability to navigate via table of contents, please visit our [colab version here]( https://colab.research.google.com/drive/17_DSYw9d2MnJqLXqr09k2qvw3z0Xzv6j?usp=sharing)
 ## Datasets folder
 1. 'BTC_USD_1h.csv': original Bitocin price data gathered from Bistamps 
