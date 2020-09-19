@@ -1,4 +1,6 @@
 # Bitcoin price prediction with Deep Learning 
+#### Full report can be found [here] (https://github.com/wingwingz/DL-Crypto/blob/master/230T2%20Final%20Report%20-%20DL%20for%20Crypto.pdf)
+#### For best view and the ability to navigate via table of contents, please visit our [colab version here]( https://colab.research.google.com/drive/17_DSYw9d2MnJqLXqr09k2qvw3z0Xzv6j?usp=sharing)
 ## Datasets folder
 1. 'BTC_USD_1h.csv': original Bitocin price data gathered from Bistamps 
 2. 'all_features_combine.csv': combined dataset with Bitcoin prices and all external factors
@@ -32,7 +34,6 @@ Will used the all_features_combine.csv for further analysis.
 * model_CNN_LSTM_bayes: Parameter Tunning
 
 ## Demo results
-#### For best view and the ability to navigate via table of contents, please visit our [colab version here]( https://colab.research.google.com/drive/17_DSYw9d2MnJqLXqr09k2qvw3z0Xzv6j?usp=sharing).
 #### We created a Demo.ipynb to present our analysis process and sample results for all trained models with following sections
 
 [Data Preparation and Feature Engineering](#first)
