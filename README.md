@@ -32,6 +32,7 @@ Will used the all_features_combine.csv for further analysis.
 * model_CNN_LSTM_bayes: Parameter Tunning
 
 ## Demo results
+#### For best view and the ability to navigate via table of contents, please visit our [colab version here](# https://colab.research.google.com/drive/17_DSYw9d2MnJqLXqr09k2qvw3z0Xzv6j?usp=sharing).
 #### We created a Demo.ipynb to present our analysis process and sample results for all trained models with following sections
 
 [Data Preparation and Feature Engineering](#first)
