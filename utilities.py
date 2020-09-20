@@ -627,7 +627,12 @@ def results_plotter_bayes(model):
 ################################################################
     
 def data_retriever_multi(coin,cols_level = None, cols_diff = None):
-    
+    """
+    Depending on the coin type, reads the data from csv; splits them into train, 
+    cross validation and test sets. Since we past 'horizon' timesteps of data, 
+    some data massaging is taken care of at the split of Train - CV sets and CV - Test sets.
+    Returns the processed data
+    """
     coin_raw = pd.read_csv(r'../data_binance/{}_USD_1h.csv'.format(coin),index_col=0)
     other_raw = pd.read_csv(r'../all_features_combine.csv',index_col=0)
     
@@ -672,6 +677,11 @@ def data_retriever_multi(coin,cols_level = None, cols_diff = None):
     return (TrainingData, ValidationData,TestingData, dates) 
 
 def Train_Valid_Test_split_multi(coin, features_lvl = None, features_diff = None): 
+    """
+    Depending on coin type, it first gets the data and its first differences.
+    Replaces the zeros with the sign of the mean value of price difference.
+    Returns the processed data.
+    """
     TrainingData, ValidationData, TestingData, dates = data_retriever_multi('BTC', cols_level = ['RSI','Stochastic_Oscillator',
                                                                                            'Bollinger_Low','Bollinger_High'], 
                                                                       cols_diff = ['Volume_BTC','USDJPY', 'EURUSD', 'GBPUSD',
@@ -722,7 +732,11 @@ def Train_Valid_Test_split_multi(coin, features_lvl = None, features_diff = None
     return (trainX,trainY,validX,validY,testX,testY, dates, trainY_raw, validY_raw, testY_raw)
 
 def model_constructor_multi(coin, model_type = None):
-    
+    """
+    Receives the processed data with passed split argument from Train_Valid_Test_split for a given coin.
+    Depending on the model type, it receives the compiled model from model_CNN or model_LSTM or model_CNN_LSTM()
+    It returns the model and processed data.
+    """
     trainX,trainY,validX,validY,testX,testY, dates,trainY_raw, validY_raw, testY_raw = Train_Valid_Test_split_multi(coin)
    
     if model_type == 'CNN':
@@ -749,6 +763,11 @@ def model_constructor_multi(coin, model_type = None):
 
 
 def model_trainer_multi(coin, model_type):
+    """
+    For a given coin, it receives the processed data and compiled model from model_constructor.
+    Then it fits while using cross-validation set evaluation and callbacks to save the best model
+    Finally, it returns the raw predictions and prediction after applying sign function.
+    """
     model,trainX,trainY,validX,validY,testX,testY, dates, trainY_raw, validY_raw, testY_raw = model_constructor_multi(coin, model_type)
     
     checkpointer = ModelCheckpoint(filepath     = '../Final_model/weights.best.from_scratch5.hdf5',
