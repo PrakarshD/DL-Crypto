@@ -1,4 +1,5 @@
 # Bitcoin price prediction with Deep Learning 
+#### This repository's work is inspired by ["Investigating the Problem of Cryptocurrency Price Prediction: A Deep Learning Approach" (Pintelas et al.)](https://link.springer.com/chapter/10.1007/978-3-030-49186-4_9)
 #### Full report can be found [here](https://github.com/wingwingz/DL-Crypto/blob/master/Final_Report.pdf)
 #### For best view and the ability to navigate via table of contents, please visit our [colab version here]( https://colab.research.google.com/drive/17_DSYw9d2MnJqLXqr09k2qvw3z0Xzv6j?usp=sharing)
 ## Datasets folder
